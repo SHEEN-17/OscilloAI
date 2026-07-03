@@ -1,30 +1,46 @@
 from loader import load_dataset
-from model import build_model
+from model import create_model
+from metrics import plot_history
 
-import tensorflow as tf
+import os
 
-print("="*50)
+print("=" * 50)
 print("OscilloAI Training")
-print("="*50)
+print("=" * 50)
 
-train_ds, val_ds = load_dataset()
+# Load dataset
+X_train, X_val, y_train, y_val, classes = load_dataset("../dataset")
 
-model = build_model()
+print(f"Jumlah kelas : {len(classes)}")
+print(f"Kelas        : {classes}")
+
+# Build model
+model = create_model(len(classes))
 
 model.summary()
 
-model.compile(
-    optimizer="adam",
-    loss="categorical_crossentropy",
-    metrics=["accuracy"]
-)
-
+# Training
 history = model.fit(
-    train_ds,
-    validation_data=val_ds,
-    epochs=20
+
+    X_train,
+
+    y_train,
+
+    validation_data=(X_val, y_val),
+
+    epochs=20,
+
+    batch_size=32
+
 )
 
+# Pastikan folder models ada
+os.makedirs("../models", exist_ok=True)
+
+# Simpan model
 model.save("../models/oscilloAI.keras")
 
-print("\nTraining selesai.")
+print("\nModel berhasil disimpan.")
+
+# Tampilkan grafik
+plot_history(history)
