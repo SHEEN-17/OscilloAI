@@ -2,11 +2,13 @@ import os
 import cv2
 import numpy as np
 
+from sklearn.model_selection import train_test_split
+from tensorflow.keras.utils import to_categorical
 
 IMAGE_SIZE = 224
 
 
-def load_images(folder):
+def load_dataset(folder="../dataset"):
 
     images = []
 
@@ -34,14 +36,45 @@ def load_images(folder):
                     (IMAGE_SIZE, IMAGE_SIZE)
                 )
 
-                image = image / 255.0
+                image = image.astype("float32") / 255.0
 
                 images.append(image)
 
                 labels.append(label)
 
+    images = np.array(images)
+
+    labels = np.array(labels)
+
+    labels = to_categorical(
+        labels,
+        num_classes=len(classes)
+    )
+
+    X_train, X_val, y_train, y_val = train_test_split(
+
+        images,
+
+        labels,
+
+        test_size=0.2,
+
+        random_state=42,
+
+        shuffle=True
+
+    )
+
     return (
-        np.array(images),
-        np.array(labels),
+
+        X_train,
+
+        X_val,
+
+        y_train,
+
+        y_val,
+
         classes
+
     )

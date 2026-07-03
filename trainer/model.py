@@ -1,10 +1,11 @@
 import tensorflow as tf
 
+
 def create_model(num_classes):
 
     model = tf.keras.Sequential([
 
-        tf.keras.layers.Input(shape=(224, 224, 3)),
+        tf.keras.layers.Input(shape=(224,224,3)),
 
         tf.keras.layers.Conv2D(
             32,
@@ -12,7 +13,7 @@ def create_model(num_classes):
             activation="relu"
         ),
 
-        tf.keras.layers.MaxPooling2D((2,2)),
+        tf.keras.layers.MaxPooling2D(),
 
         tf.keras.layers.Conv2D(
             64,
@@ -20,7 +21,7 @@ def create_model(num_classes):
             activation="relu"
         ),
 
-        tf.keras.layers.MaxPooling2D((2,2)),
+        tf.keras.layers.MaxPooling2D(),
 
         tf.keras.layers.Conv2D(
             128,
@@ -28,7 +29,7 @@ def create_model(num_classes):
             activation="relu"
         ),
 
-        tf.keras.layers.MaxPooling2D((2,2)),
+        tf.keras.layers.MaxPooling2D(),
 
         tf.keras.layers.Flatten(),
 
@@ -48,9 +49,11 @@ def create_model(num_classes):
 
     model.compile(
 
-        optimizer="adam",
+        optimizer=tf.keras.optimizers.Adam(
+            learning_rate=0.001
+        ),
 
-        loss="sparse_categorical_crossentropy",
+        loss="categorical_crossentropy",
 
         metrics=["accuracy"]
 
