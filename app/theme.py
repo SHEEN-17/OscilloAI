@@ -1,0 +1,21 @@
+PRIMARY = "#1E88E5"
+
+SUCCESS = "#43A047"
+
+WARNING = "#FB8C00"
+
+ERROR = "#E53935"
+
+BACKGROUND = "#1A1A1A"
+
+CARD = "#242424"
+
+TEXT = "#FFFFFF"
+
+TITLE_FONT = ("Segoe UI",30,"bold")
+
+SUBTITLE_FONT = ("Segoe UI",18)
+
+NORMAL_FONT = ("Segoe UI",15)
+
+RESULT_FONT = ("Segoe UI",22,"bold")
