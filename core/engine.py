@@ -1,18 +1,30 @@
-import os
+from pathlib import Path
+
+from core.result import AnalysisResult
 
 from app.image_processing.pipeline import process
-
-from app.signal_analysis.measure import waveform_to_array
-from app.signal_analysis.amplitude import amplitude
-from app.signal_analysis.rms import rms
-from app.signal_analysis.frequency import estimate_frequency
-from app.signal_analysis.duty_cycle import duty_cycle
-from app.signal_analysis.statistics import signal_statistics
+from app.signal_analysis.analyzer import analyze_signal
+from app.predictor_engine import Predictor
+from app.explainer.engine import explain
 
 
 class OscilloEngine:
 
+    def __init__(self):
+
+        print("=" * 60)
+        print("              OSCILLO AI ENGINE")
+        print("=" * 60)
+
+        self.predictor = Predictor()
+
     def analyze(self, image_path):
+
+        image_path = str(
+            Path(image_path)
+        )
+
+        result = AnalysisResult()
 
         (
             image,
@@ -22,24 +34,61 @@ class OscilloEngine:
             waveform_image,
             waveform,
             processed
+
         ) = process(image_path)
 
-        signal = waveform_to_array(waveform)
+        # ==========================
+        # IMAGE
+        # ==========================
 
-        result = {
+        result.image = image
 
-            "waveform_points": len(waveform),
+        result.edges = edges
 
-            "amplitude": amplitude(signal),
+        result.detected = detected
 
-            "rms": rms(signal),
+        result.warped = warped
 
-            "frequency": estimate_frequency(signal),
+        result.waveform_image = waveform_image
 
-            "duty_cycle": duty_cycle(signal),
+        result.processed = processed
 
-            "statistics": signal_statistics(signal)
+        result.waveform = waveform
 
-        }
+        # ==========================
+        # SIGNAL ANALYSIS
+        # ==========================
+
+        analysis = analyze_signal(
+            waveform
+        )
+
+        result.waveform_points = analysis["points"]
+
+        result.frequency = analysis["frequency"]
+
+        result.amplitude = analysis["amplitude"]
+
+        result.vrms = analysis["vrms"]
+
+        result.duty_cycle = analysis["duty_cycle"]
+
+        # ==========================
+        # AI PREDICTION
+        # ==========================
+
+        label, confidence = self.predictor.predict(
+            processed
+        )
+
+        result.prediction = label
+
+        result.confidence = confidence
+
+        # ==========================
+        # AI EXPLANATION
+        # ==========================
+
+        result = explain(result)
 
         return result

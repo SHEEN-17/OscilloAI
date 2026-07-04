@@ -1,27 +1,31 @@
+import os
 import cv2
 
-from preprocess import preprocess_image
-from detect_screen import detect_screen
+from .preprocess import preprocess_image
+from .detect_screen import detect_screen
 
 
-IMAGE = "../test_images/test.png"
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-
-image = cv2.imread(IMAGE)
-
-edges = detect_screen(image)
-
-processed = preprocess_image(IMAGE)
-
-cv2.imshow("Original", image)
-cv2.imshow("Edges", edges)
-cv2.imshow(
-    "Processed",
-    cv2.cvtColor(
-        (processed * 255).astype("uint8"),
-        cv2.COLOR_RGB2BGR
-    )
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(CURRENT_DIR, "..", "..")
 )
 
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+IMAGE_PATH = os.path.join(
+    PROJECT_ROOT,
+    "test_images",
+    "test.png"
+)
+
+processed = preprocess_image(IMAGE_PATH)
+
+edges = detect_screen(
+    cv2.imread(IMAGE_PATH)
+)
+
+print("=" * 50)
+print("Preprocess Test Success")
+print("=" * 50)
+print(processed.shape)
+print(edges.shape)
+print("=" * 50)
