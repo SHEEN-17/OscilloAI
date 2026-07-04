@@ -1,46 +1,54 @@
-from loader import load_dataset
+from dataset import load_dataset
 from model import create_model
-from metrics import plot_history
+from callbacks import get_callbacks
+from export import export_labels
+from config import EPOCHS
 
-import os
 
-print("=" * 50)
-print("OscilloAI Training")
-print("=" * 50)
+def train():
 
-# Load dataset
-X_train, X_val, y_train, y_val, classes = load_dataset("../dataset")
+    print("=" * 50)
+    print("Loading Dataset...")
+    print("=" * 50)
 
-print(f"Jumlah kelas : {len(classes)}")
-print(f"Kelas        : {classes}")
+    train_dataset, validation_dataset, class_names = load_dataset()
 
-# Build model
-model = create_model(len(classes))
+    print()
+    print("Classes :", class_names)
 
-model.summary()
+    model = create_model(
+        len(class_names)
+    )
 
-# Training
-history = model.fit(
+    model.summary()
 
-    X_train,
+    print()
+    print("=" * 50)
+    print("Training Started")
+    print("=" * 50)
 
-    y_train,
+    history = model.fit(
 
-    validation_data=(X_val, y_val),
+        train_dataset,
 
-    epochs=20,
+        validation_data=validation_dataset,
 
-    batch_size=32
+        epochs=EPOCHS,
 
-)
+        callbacks=get_callbacks()
 
-# Pastikan folder models ada
-os.makedirs("../models", exist_ok=True)
+    )
 
-# Simpan model
-model.save("../models/oscilloAI.keras")
+    export_labels(class_names)
 
-print("\nModel berhasil disimpan.")
+    print()
+    print("=" * 50)
+    print("Training Finished")
+    print("=" * 50)
 
-# Tampilkan grafik
-plot_history(history)
+    return history
+
+
+if __name__ == "__main__":
+
+    train()
